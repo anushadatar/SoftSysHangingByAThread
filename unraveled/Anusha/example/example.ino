@@ -34,12 +34,6 @@ static int thread2(struct thread *thread)
   THREAD_END(thread);
 }
 
-/**
- * Finally, we have the main loop. Here is where the protothreads are
- * initialized and scheduled. First, however, we define the
- * protothread state variables pt1 and pt2, which hold the state of
- * the two protothreads.
- */
 int main(void) 
 {
   THREAD_INIT(&thread1);

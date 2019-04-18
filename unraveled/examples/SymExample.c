@@ -10,6 +10,14 @@ static sturct pt, pt1, pt2;
 int thread1_flag = 1;
 int thread2_flag = 0;
 
+void doTheThread2Thing(){
+   // Blinks on and off slowly
+}
+
+void doTheThread1Thing(){
+   // Blinks on and off quickly
+}
+
 // Thread 1
 static PT_THREAD(thread1(struct pt* pt)){
   static int thread1_time;
@@ -38,7 +46,7 @@ static PT_THREAD(thread2(struct pt* pt)){
 
   while(1){
     PT_WAIT_UNTIL(pt, thread1_flag != 1)){
-      //LED STUFF FOR THREAD 1
+      //LED STUFF FOR THREAD 2
     }
     thread1_flag = 0;
     thread2_flag = 1;

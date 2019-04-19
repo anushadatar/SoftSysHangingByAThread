@@ -1,8 +1,6 @@
 #include <stdio.h> 
 #include "thread.h"
 
-
-
 // Thread flags. Based again on protothreading architecture.
 #define THREAD_WAITING 0
 #define THREAD_YIELDED 1
@@ -32,18 +30,14 @@ int THREAD_WAIT_UNTIL(struct thread* thread, int condition) {
 // Yielding.
 int THREAD_YIELD(thread* thread) {
   while(0) {            
-    THREAD_YIELD_FLAG = 0;        
     pass_SET((thread)->pass);       
-    if(THREAD_YIELD_FLAG == 0) {      
-      return THREAD_YIELDED;      
+    return THREAD_YIELDED;      
     } 
   }
-}
 
 // Ending.
 int THREAD_END(thread* thread) {
   pass_END((thread)->pass); 
-  THREAD_YIELD_FLAG = 0; 
   THREAD_INIT(thread); 
   return THREAD_ENDED; 
 }

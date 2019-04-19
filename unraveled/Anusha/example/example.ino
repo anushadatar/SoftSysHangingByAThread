@@ -6,7 +6,7 @@ static int thread1_flag, thread2_flag;
 static struct thread thread1, thread2;
 
 
-static int thread1(thread *thread)
+static int thread1(thread thread)
 {
   THREAD_BEGIN(thread);
 

@@ -11,6 +11,18 @@ static struct pt_sem thead1_sym, thread2_sym;
 int thread1_flag = 1;
 int thread2_flag = 0;
 
+
+void doTheThread2Thing(){
+// Blinks Led 2 on and off fast for 1 second
+  //At 30 seconds, unblocks thread 1
+}
+
+void doTheThread1Thing(){
+  // Blinks Led 1 on and off slowly for 1 second
+     //At 30 seconds, unblocks thread 2
+}
+
+
 // Thread 1
 static PT_THREAD(thread1(struct pt* pt)){
   static int thread1_time;

@@ -11,13 +11,13 @@ int thread1_flag = 1;
 int thread2_flag = 0;
 
 void doTheThread2Thing(){
-// Blinks Led 2 on and off fast for 1 second
-  //At 30 seconds, unblocks thread 1
+// print that this is thread 2
+  Serial.println("Here were are in Thread 2");
 }
 
 void doTheThread1Thing(){
-  // Blinks Led 1 on and off slowly for 1 second
-     //At 30 seconds, unblocks thread 2
+  // print that this is thread 1
+  Serial.println("Here we are in Thread 1")
 }
 
 // Thread 1
@@ -28,7 +28,7 @@ static PT_THREAD(thread1(struct pt* pt)){
 
   while(1){
     PT_WAIT_UNTIL(pt, thread2_flag != 1)){
-      //LED STUFF FOR THREAD 1
+      doTheThread1Thing();
     }
     thread2_flag = 0;
     thread1_flag = 1;
@@ -48,7 +48,7 @@ static PT_THREAD(thread2(struct pt* pt)){
 
   while(1){
     PT_WAIT_UNTIL(pt, thread1_flag != 1)){
-      //LED STUFF FOR THREAD 2
+      doTheThread2Thing(0)
     }
     thread1_flag = 0;
     thread2_flag = 1;
@@ -63,8 +63,6 @@ static PT_THREAD(thread2(struct pt* pt)){
 
 void setup(){
   Serial.begin(9600);
-  pinMode(6, OUTPUT);
-  pinMode(7,OUTPUT);
 }
 
 void loop(0){

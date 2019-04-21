@@ -1,5 +1,8 @@
 #include <stdio.h> 
+extern "C" {
 #include "thread.h"
+}
+int dummy( void );
 
 // Flag variable for each thread.
 static int thread1_flag, thread2_flag;
@@ -42,4 +45,6 @@ int main(void)
     thread2_function(&thread2);
   }
 }
+
+
 

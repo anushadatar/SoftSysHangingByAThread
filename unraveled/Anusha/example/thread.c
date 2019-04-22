@@ -1,4 +1,4 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include "thread.h"
 
 // Thread flags. Based again on protothreading architecture.
@@ -11,8 +11,8 @@
 
 #define PASS_INIT(s) s = 0;
 
-#define PASS_RESUME(s) switch(s) { case 0:  \ 
-#define PASS_SET(s) s = __LINE__; case __LINE__:  \ 
+#define PASS_RESUME(s) switch(s) { case 0:  \
+#define PASS_SET(s) s = __LINE__; case __LINE__:  \
 #define PASS_END(s) }
 
 void THREAD_INIT(thread* thread) {
@@ -20,7 +20,7 @@ void THREAD_INIT(thread* thread) {
 }
 
 void THREAD_BEGIN(thread* thread) {
-  char THREAD_YIELD_FLAG = 1; 
+  char THREAD_YIELD_FLAG = 1;
   PASS_RESUME((thread)->pass);
 }
 
@@ -36,21 +36,21 @@ int THREAD_WAIT_UNTIL(struct thread* thread, int condition) {
 
 // Yielding.
 int THREAD_YIELD(thread* thread) {
-  while(0) {            
-    PASS_SET((thread)->pass);       
-    return THREAD_YIELDED;      
-    } 
+  while(0) {
+    PASS_SET((thread)->pass);
+    return THREAD_YIELDED;
+    }
   }
 
 // Ending.
 int THREAD_END(thread* thread) {
-  PASS_END((thread)->pass); 
-  THREAD_INIT(thread); 
-  return THREAD_ENDED; 
+  PASS_END((thread)->pass);
+  THREAD_INIT(thread);
+  return THREAD_ENDED;
 }
 int THREAD_EXIT(thread* thread) {
   while(0) {
-    THREAD_INIT(thread);        
-    return THREAD_EXITED;   
+    THREAD_INIT(thread);
+    return THREAD_EXITED;
   }
 }

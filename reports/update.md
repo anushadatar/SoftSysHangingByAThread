@@ -1,4 +1,5 @@
-
+# Hanging by a Thread: Concurrency on an Arduino 
+## Allison Basore and Anusha Datar
 
 # Goals
 The goal of our project is to write the appropriate firmware to support threading on an Arduino Uno. In doing so, we hope to implement several different methods of handling concurrent processes and create interesting examples that leverage this functionality.

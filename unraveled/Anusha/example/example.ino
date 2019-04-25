@@ -1,50 +1,62 @@
-#include <stdio.h> 
-extern "C" {
 #include "thread.h"
-}
-int dummy( void );
+#include <stdio.h> 
 
-// Flag variable for each thread.
-static int thread1_flag, thread2_flag;
+static int flag1, flag2;
 static struct thread thread1, thread2;
 
-static int thread1_function(struct thread* t)
+/* 
+ *  example1
+ */
+static int example1(struct thread *thread)
 {
-  THREAD_BEGIN(t);
-
+  THREAD_START(thread);
   while(1) {
-  
-    THREAD_WAIT_UNTIL(t, thread2_flag != 0);
-    printf("Thread 1 is running\n");
-
-    thread2_flag = 0;
-    thread1_flag = 1;
+    THREAD_WAIT_UNTIL(thread, flag2 != 0);
+    Serial.println("Protothread 1 running\n");
+    /* Flip the flags so the other thread can run. */
+    flag2 = 0;
+    flag1 = 1;
   }
-  THREAD_END(t);
+  THREAD_CLEAR(thread);
 }
 
-static int thread2_function(struct thread* t )
+/* 
+ *  example2
+ */
+static int example2(struct thread *thread)
 {
-  THREAD_BEGIN(t);
+  THREAD_START(thread);
+
   while(1) {
-    thread2_flag = 1;
-    THREAD_WAIT_UNTIL(t, thread1_flag != 0);
-    printf("Thread 2 is running\n");
-    thread1_flag = 0;
+    /* Wait until triggered and then re-flip the flags. */
+    flag2 = 1;
+    THREAD_WAIT_UNTIL(thread, flag1 != 0);
+    Serial.println("Protothread 2 running\n");
+    flag1 = 0;
   }
-  THREAD_END(t);
+  THREAD_CLEAR(thread);
 }
 
-int main(void) 
-{
-  THREAD_INIT(&thread1);
-  THREAD_INIT(&thread2);
-  
-  while(1) {
-    thread1_function(&thread1);
-    thread2_function(&thread2);
-  }
+/*
+ * Setup
+ */
+void setup(void) {
+  Serial.begin(9600);
+  Serial.println("Running serial...");
 }
 
-
+/*
+ * Loop
+ */
+void loop(void)
+{  
+  /* Initialize threads */
+  THREAD_INITALIZE(&thread1);
+  THREAD_INITALIZE(&thread2);
+  /* Run the two threads forever. */
+  while(1) {
+    example1(&thread1);
+    example2(&thread2);
+  }
+}
 

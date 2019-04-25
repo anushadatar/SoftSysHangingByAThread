@@ -10,7 +10,6 @@
 // Based heavily on protothreading example.
 
 #define PASS_INIT(s) s = 0;
-
 #define PASS_RESUME(s) switch(s) { case 0:  \
 #define PASS_SET(s) s = __LINE__; case __LINE__:  \
 #define PASS_END(s) }

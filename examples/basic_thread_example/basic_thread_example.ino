@@ -1,11 +1,15 @@
 #include "thread.h"
 #include <stdio.h> 
 
+// Flags to trigger each thread.
 static int flag1, flag2;
+// Structs for each thread.
 static struct thread thread1, thread2;
 
 /* 
- *  example1
+  example1 : First thread to execute.
+
+  thread : Pointer to thread object to kick off.
  */
 static int example1(struct thread *thread)
 {
@@ -21,7 +25,9 @@ static int example1(struct thread *thread)
 }
 
 /* 
- *  example2
+  example2 : Second thread to execute.
+
+  thread : Pointer to thread object to kick off.
  */
 static int example2(struct thread *thread)
 {
@@ -38,16 +44,16 @@ static int example2(struct thread *thread)
 }
 
 /*
- * Setup
- */
+  setup : Literally just kicks off and runs Serial so we can see the threads running. 
+*/
 void setup(void) {
   Serial.begin(9600);
   Serial.println("Running serial...");
 }
 
 /*
- * Loop
- */
+  loop : Initializes the two threads and then runs them forever. 
+*/
 void loop(void)
 {  
   /* Initialize threads */

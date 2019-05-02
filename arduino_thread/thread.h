@@ -1,11 +1,30 @@
 #ifndef __THREAD_H__
 #define __THREAD_H__
 
-/* 
- *  Define the internal variable of the thread structure.
- */
+/*
+    struct pass_t
+
+    Define the internal framework of the struct within each individual
+    thread. This two-byte struct leverages the __LINE__ macro for threading 
+    functionality. 
+    
+    The thread struct is basically just a wrapper for indivdual variables.
+*/
 typedef unsigned short pass_t;
+/*
+    PASS_INITIALIZE
+    
+    Initializes the internal continuation variable for each individual thread.
+
+    p = the pointer to the thread to initialize the macro for.
+    returns void, but instiates the thread and sets the pointer value to 0.
+*/
 #define PASS_INITALIZE(p) p = 0;
+/* 
+    PASS_RESUME, PASS_SET, and PASS_CLEAR
+    Leverages the fact that switch statements the  
+
+*/
 #define PASS_RESUME(p) switch(p) { case 0:
 #define PASS_SET(p) p = __LINE__; case __LINE__:
 #define PASS_CLEAR(p) }

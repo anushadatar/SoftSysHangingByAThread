@@ -64,9 +64,7 @@ struct thread {
 */
 #define THREAD_WAIT_UNTIL(thread, trigger) \
     PASS_SET((thread)->pass); \
-    if(!(trigger)) { \
-      return THREAD_WAITING; \
-    } \
+    \
 /*
 	Block until the child thread has been scheduled.
 
@@ -123,7 +121,6 @@ struct thread {
 */
 #define THREAD_EXIT(thread) \
     THREAD_INITALIZE(thread); \
-    return THREAD_CLOSED; \
 /*
 	Clears and removes the thread. 
 
@@ -131,9 +128,7 @@ struct thread {
 */
 #define THREAD_CLEAR(thread) \
     PASS_CLEAR((thread)->pass); \
-    THREAD_INITALIZE(thread); \
-    return THREAD_CLEARED; }
-
+    return 3; \
 /******************************************************************************
 	Semaphore implementation. 
 ******************************************************************************/

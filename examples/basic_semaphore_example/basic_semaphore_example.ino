@@ -1,80 +1,115 @@
-// Unstable start of example!!
+// STILL VERY UNSTABLE and doesn't compile
 
+#include <stdio.h>
 #include "thread.h"
-#include <stdlib.h>
-
+ 
 #define NUM_ITEMS 32
-#define BUFSIZE 8
+#define BUFFER_SIZE 8
 
+// Global variables. Tried to declare them during setup,
+// but that did not work, so here we are...
+static int buffer[BUFFER_SIZE];
+static int buffer_pointer;
+static struct semaphore full, empty;
 
-thread producer(thread* thread) 
+static void add_buffer(int value)
 {
-  static int produced;
-  
-  THREAD_START(thread);
-  
-  for(produced = 0; produced < NUM_ITEMS; ++produced) {
-  
-    SEMAPHORE_WAIT(thread, &full);
-    
-    SEMAPHORE_WAIT(thread, &mutex);
-
-    // add to the buffer
-    
-    SEMAPHORE_SIGNAL(thread, &mutex);
-    SEMAPHORE_SIGNAL(thread, &empty);
-  }
-
-  THREAD_EXIT(thread);
+  Serial.print("Value ");
+  Serial.print(value);
+  Serial.print (" added at ");
+  Serial.print(buffer_pointer);
+  Serial.print("\n");
+  buffer[buffer_pointer] = value;
+  buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
+}
+static int get_buffer(void)
+{
+  int value;
+  value = buffer[buffer_pointer];
+  Serial.print("Value ");
+  Serial.print(value);
+  Serial.print (" removed at ");
+  Serial.print(buffer_pointer);
+  Serial.print("\n");
+  buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
+  return value;
 }
 
-thread consumer(thread* thread)
+static int create_value(void)
 {
-  static int consumed;
-  
+  static int value = 0;
+  Serial.print("Value ");
+  Serial.print(value);
+  Serial.print (" created.");
+  Serial.print("\n");  
+  return value++;
+}
+
+static void remove_value(int value)
+{
+  Serial.print("Value ");
+  Serial.print(value);
+  Serial.print (" removed.");
+  Serial.print("\n");
+}
+ 
+static void consumer(struct thread* thread) {
+  static int total_consumed;
+    
   THREAD_START(thread);
-
-  for(consumed = 0; consumed < NUM_ITEMS; ++consumed) {
-    
+ 
+  for(total_consumed = 0; total_consumed < NUM_ITEMS; ++total_consumed) {
     SEMAPHORE_WAIT(thread, &empty);
-    
-    SEMAPHORE_WAIT(thread, &mutex);    
+    remove_value(get_buffer());    
+    SEMAPHORE_SIGNAL(thread, &full);
+  }
+  THREAD_CLEAR(thread);
+}
 
-    // remove from the buffer
-    
-    SEMAPHORE_SIGNAL(thread, &mutex);
+static void producer(struct thread *thread) {
+  static int total_produced;
+  THREAD_START(thread);
+  for(total_produced = 0; total_produced < NUM_ITEMS; ++total_produced) {  
+    SEMAPHORE_WAIT(thread, &empty); 
+    int value = create_value();  
+    add_buffer(value);
+ 
     
     SEMAPHORE_SIGNAL(thread, &full);
   }
-
-  THREAD_EXIT(thread);
+  THREAD_CLEAR(thread);
 }
 
-thread main_thread(thread* thread)
+ 
+static thread main_thread(struct thread *thread)
 {
-  static struct thread producer_thread, consumer_thread;
-
+  static struct pt pt_producer, pt_consumer;
   THREAD_START(thread);
-  
   SEMAPHORE_INIT(&empty, 0);
   SEMAPHORE_INIT(&full, BUFSIZE);
-  SEMAPHORE_INIT(&mutex, 1);
-
-  THREAD_INITALIZE(&producer_thread);
-  THREAD_INITALIZE(&consumer_thread);
-
-  int ret = THREAD_WAIT_UNTIL(thread, producer(&producer_thread) &
-                     consumer(&consumer_thread));
-
-  THREAD_EXIT(thread);
+  THREAD_INITIALIZE(&producer_thread);
+  THREAD_INITIALIZE(&consumer_thread);
+  THREAD_WAIT_THREAD(thread, producer(&producer_thread) &
+         consumer(&consumer_thread));
+  THREAD_CLEAR(thread);
 }
 
-void setup(void) {
+int main(void)
+{
+  struct thread main_thread;
+  THREAD_INITIALIZE(&main_thread);
+  THREAD_SCHEDULE(main_thread(&main_thread))
+  return 0;
+}
+
+void setup(void) 
+{
   Serial.begin(9600);
-  static struct semaphore mutex, full, empty;
+  Serial.print("Starting...");
 }
 
-void loop(void) [
-  // Initialize buffer
-  // Initialize main_thread
+void loop(void) 
+{
+  main();
 }
+

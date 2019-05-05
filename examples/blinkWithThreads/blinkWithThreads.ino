@@ -98,7 +98,6 @@ static int example2(struct thread *thread)
  */
 void setup(void) {
   Serial.begin(9600);
-  Serial.println("Running serial...");
 }
 
 /*

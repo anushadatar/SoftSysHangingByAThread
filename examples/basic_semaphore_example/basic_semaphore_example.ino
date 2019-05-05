@@ -52,7 +52,7 @@ static int producer(struct thread *thread) {
 }
 
  
-static thread main_thread(struct thread *thread)
+static int main_thread(struct thread *thread)
 {
   static struct thread producer_thread, consumer_thread;
   THREAD_START(thread);
@@ -67,9 +67,9 @@ static thread main_thread(struct thread *thread)
 
 int main(void)
 {
-  struct thread main_thread;
-  THREAD_INITIALIZE(&main_thread);
-  THREAD_SCHEDULE(main_thread(&main_thread))
+  struct thread main_thread_object;
+  THREAD_INITIALIZE(&main_thread_object);
+  THREAD_SCHEDULE(main_thread(&main_thread_object));
   return 0;
 }
 

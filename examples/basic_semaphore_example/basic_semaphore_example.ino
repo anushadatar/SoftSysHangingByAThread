@@ -14,11 +14,10 @@ static struct semaphore full, empty;
 
 static int consumer(struct thread* thread) {
   static int total_consumed;
-    
   THREAD_START(thread);
  
   for(total_consumed = 0; total_consumed < NUM_ITEMS; ++total_consumed) {
-    SEMAPHORE_WAIT(thread, &empty);
+    SEMAPHORE_WAIT(thread, &full);
     int value;
     value = buffer[buffer_pointer];
     Serial.print("Value ");
@@ -26,8 +25,8 @@ static int consumer(struct thread* thread) {
     Serial.print (" removed at ");
     Serial.print(buffer_pointer);
     Serial.print("\n");
-    buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
-    SEMAPHORE_SIGNAL(thread, &full);
+    buffer_pointer = (buffer_pointer - 1) % BUFFER_SIZE;
+    SEMAPHORE_SIGNAL(thread, &empty);
   }
   THREAD_CLEAR(thread);
 }
@@ -35,17 +34,17 @@ static int consumer(struct thread* thread) {
 static int producer(struct thread *thread) {
   static int total_produced;
   THREAD_START(thread);
+  
   for(total_produced = 0; total_produced < NUM_ITEMS; ++total_produced) {  
     SEMAPHORE_WAIT(thread, &empty); 
-    int value = 1;  
-  Serial.print("Value ");
-  Serial.print(value);
-  Serial.print (" added at ");
-  Serial.print(buffer_pointer);
-  Serial.print("\n");
-  buffer[buffer_pointer] = value;
-  buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE; 
-    
+    int value = total_produced;  
+    Serial.print("Value ");
+    Serial.print(value);
+    Serial.print (" added at ");
+    Serial.print(buffer_pointer);
+    Serial.print("\n");
+    buffer[buffer_pointer] = value;
+    buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE; 
     SEMAPHORE_SIGNAL(thread, &full);
   }
   THREAD_CLEAR(thread);
@@ -65,13 +64,15 @@ static int main_thread(struct thread *thread)
   THREAD_CLEAR(thread);
 }
 
-int main(void)
+int main_loop(void)
 {
-  struct thread main_thread_object;
-  THREAD_INITIALIZE(&main_thread_object);
-  THREAD_SCHEDULE(main_thread(&main_thread_object));
-  return 0;
-}
+    struct thread main_thread_object;
+    THREAD_INITIALIZE(&main_thread_object);
+    while(THREAD_SCHEDULE(main_thread(&main_thread_object))) {
+      delay(10);
+    }
+    
+  }
 
 void setup(void) 
 {
@@ -81,6 +82,6 @@ void setup(void)
 
 void loop(void) 
 {
-  main();
+  main_loop();
 }
 

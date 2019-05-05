@@ -70,10 +70,13 @@ thread : pointer to the thread struct for the given thread.
 trigger : integer condition variable to trigger thread.
 */
 #define THREAD_WAIT_UNTIL(thread, trigger) \
-    PASS_SET((thread)->pass); \
-    if(!(trigger)) { \
-      return THREAD_WAITING; \
-    } \
+    do { \
+      PASS_SET((thread)->pass); \
+      if(!(trigger)) \ 
+        { \
+        return THREAD_WAITING; \
+        } \
+      } while(0) 
 /*
 Block until the child thread has been scheduled.
 
@@ -157,7 +160,6 @@ p : pointer  to the semaphore struct
 i : unsigned int that increments
 */
 #define SEMAPHORE_INIT(p, i) (p)->counter = i
-
 /*
 Wait for a thread to block while the counter is zero and
 continue when the value of the coutner is greater than zero.
@@ -166,11 +168,10 @@ t : Pointer to the thread executing the operation.
 p : Pointer to the semaphore object for the thread.
 */
 #define SEMAPHORE_WAIT(t, p)  \
-  { \
+  do { \
     THREAD_WAIT_UNTIL(t, (p)->counter > 0); \
     --(p)->counter; \
-  } 
-
+  } while(0) 
 /*
 Signal and increment the counter inside the semaphore
 

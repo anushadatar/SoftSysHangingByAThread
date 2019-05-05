@@ -1,13 +1,15 @@
 /*
-  Basic semaphore example using thread.h.
+  Basic semaphore example using thread.h displayed with LCD screen.
 
   Creates a bounded buffer that a producer thread adds to
   until it reaches capacity and then a consumer thread removes from until it is
-  empty.
+  empty. Displays thread semaphores
 */
 
 #include <stdio.h>
 #include "thread.h"
+
+#include <LiquidCrystal.h> // LCD Screen
 
 // Keep constants as preprocessor definitions.
 #define TOTAL_NUM_ITEMS 32
@@ -17,6 +19,60 @@
 static int buffer[BUFFER_SIZE];
 static int buffer_pointer;
 static struct semaphore full, empty;
+
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+struct thread main_thread_object;
+
+class Displayer{
+
+	long beginTime;
+	long endTime;
+	long durationTime;
+	unsigned long previousMillis;
+	int currState;
+	char * message;
+
+  //Init
+  public:
+    Displayer(long start, long end, long duration, char* Tmessage){
+
+			beginTime = start;
+			endTime = end;
+			durationTime = duration;
+			previousMillis = 0;
+      Serial.println("LCD is set up\n");
+			currState = 0;
+			message = Tmessage;
+
+    }
+
+  // Called during each thread to update the LED
+  void Update(){
+		unsigned long currentMillis = millis();
+		if((currState == 1) && (currentMillis - previousMillis >= durationTime)){
+
+      // Going to turn off
+
+    	currState = 0;
+
+      previousMillis = currentMillis;
+
+			lcd.clear();
+      lcd.noDisplay();
+    }else if ((currState == 0) && (currentMillis - previousMillis <= durationTime)){
+
+      //Going to turn on
+      currState = 1;
+      previousMillis = currentMillis;
+			lcd.display();
+			lcd.print(message);
+    }
+
+	}
+
+};
 
 /*
 Consumer thread that removes from bounded buffer and then
@@ -73,14 +129,19 @@ static int producer(struct thread *thread) {
   THREAD_CLEAR(thread);
 }
 
+
+
+Displayer LCDThreadA(50, 300, 500, MessageA);
+
+
 /*
 Main thread that initializes the producer and the consumer
 and the associated semaphores.
 
 thread : Pointer to thread to make the main thread.
 */
-static int main_thread(struct thread *thread)
-{
+static int main_thread(struct thread *thread){
+
   static struct thread producer_thread, consumer_thread;
   THREAD_START(thread);
   SEMAPHORE_INIT(&empty, 0);
@@ -93,24 +154,19 @@ static int main_thread(struct thread *thread)
 }
 
 /*
-Kick off serial.
-*/
-void setup(void)
-{
+ * Setup
+ */
+void setup(void) {
   Serial.begin(9600);
-  Serial.print("Starting...");
+	lcd.begin(16, 2);
 }
 
 /*
-Main loop for the main thread. Schedules thread and creates a delay
-to allow both threads to run at once without interference and still
-print to some output.
-*/
-void loop(void)
-{
-    struct thread main_thread_object;
-    THREAD_INITIALIZE(&main_thread_object);
-    while(THREAD_SCHEDULE(main_thread(&main_thread_object))) {
-      delay(10);
-    }
+ * Loop
+ */
+void loop(void){
+	THREAD_INITIALIZE(&main_thread_object);
+	while(THREAD_SCHEDULE(main_thread(&main_thread_object))) {
+		delay(10);
+	}
 }

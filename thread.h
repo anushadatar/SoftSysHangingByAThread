@@ -77,49 +77,48 @@ trigger : integer condition variable to trigger thread.
 		  return THREAD_WAITING; \
 	  } \
 	} while (0)
-		  /*
-		  Block until the child thread has been scheduled.
+/*
+Block until the child thread has been scheduled.
 
-		  thread     : pointer to the thread struct for the given thread.
-		  child_thread : pointer to the thread struct for the child thread.
-		  */
+thread     : pointer to the thread struct for the given thread.
+child_thread : pointer to the thread struct for the child thread.
+*/
 #define THREAD_WAIT_THREAD(thread, child_thread) THREAD_WAIT_UNTIL((thread), !(THREAD_SCHEDULE(child_thread)))
-		  /*
-		  Create a child thread, run it, and wait until it exits.
+/*
+Create a child thread, run it, and wait until it exits.
 
-		  thread     : A pointer to the protothread control structure.
-		  child_thread : A pointer to the child protothread's control structure.
-		  child    : The child protothread with arguments
-		  */
+thread     : A pointer to the protothread control structure.
+child_thread : A pointer to the child protothread's control structure.
+child    : The child protothread with arguments
+*/
 #define THREAD_NEW(thread, child_thread, child) \
     THREAD_INITALIZE((child)); \
     THREAD_WAIT_THREAD((thread), (chiild_thread)); \
 /*
-		  Schedule a thread.
+Schedule a thread.
 
-		  f : Call to the function in the source code that actually calls the protothread.
+f : Call to the function in the source code that actually calls the protothread.
 
-		  Returns 0 if thread has exited, 1 otherwise.
-		  */
+Returns 0 if thread has exited, 1 otherwise.
+*/
 #define THREAD_SCHEDULE(f) ((f) < THREAD_CLOSED)
-		  /*
-		  Hold the protothread so that other processes can happen.
+/*
+Hold the protothread so that other processes can happen.
 
-		  thread : pointer to the thread struct for the given thread.
-		  */
+thread : pointer to the thread struct for the given thread.
+*/
 #define THREAD_YIELD(thread) \
     THREAD_YIELD = 0; \
     PASS_SET((thread)->pass); \
     if(THREAD_YIELD == 0) { \
       return THREAD_YIELDED; \
     } \
+/*
+Hold until the trigger resumes the thread.
 
-		  /*
-		  Hold until the trigger resumes the thread.
-
-		  thread : pointer to the thread struct for the given thread.
-		  trigger : integer condition variable to trigger thread.
-		  */
+thread : pointer to the thread struct for the given thread.
+trigger : integer condition variable to trigger thread.
+*/
 #define THREAD_YIELD_UNTIL(thread, trigger) \
     THREAD_YIELD = 0; \
     PASS_SET((thread)->pass); \
@@ -127,56 +126,58 @@ trigger : integer condition variable to trigger thread.
       return THREAD_YIELDED; \
     } \
 /*
-		  Exit the protothread, and unblock the parent thread.
+Exit the protothread, and unblock the parent thread.
 
-		  thread : pointer to the thread struct for the given thread.
-		  */
+thread : pointer to the thread struct for the given thread.
+*/
 #define THREAD_EXIT(thread) \
     THREAD_INITALIZE(thread); \
     return THREAD_CLOSED; \
 /*
-		  Clears and removes the thread.
+Clears and removes the thread.
 
-		  thread : pointer to the thread struct for the given thread.
-		  */
+thread : pointer to the thread struct for the given thread.
+*/
 #define THREAD_CLEAR(thread) \
     PASS_CLEAR((thread)->pass); \
     THREAD_INITIALIZE(thread); \
     return THREAD_CLEARED; }
 
-		  /******************************************************************************
-		  Semaphore implementation.
-		  ******************************************************************************/
-		  /*
-		  */
-		  struct semaphore {
-		  int counter;
-	  };
+/******************************************************************************
+Semaphore implementation.
+******************************************************************************/
+/*
+struct semaphore 
+Semaphore structure that contains a counter to be used for concurrency 
+applications. Can also be leveraged as a mutex/condition variable.
+*/
+struct semaphore {
+	int counter;
+};
+/*
+Initializes the semaphore structure by creating the counter.
 
-	  /*
-	  Initializes the semaphore structure by creating the counter.
-
-	  p : pointer  to the semaphore struct
-	  i : unsigned int that increments
-	  */
+p : pointer  to the semaphore struct
+i : unsigned int that increments
+*/
 #define SEMAPHORE_INIT(p, i) (p)->counter = i
-	  /*
-	  Wait for a thread to block while the counter is zero and
-	  continue when the value of the coutner is greater than zero.
+/*
+Wait for a thread to block while the counter is zero and
+continue when the value of the coutner is greater than zero.
 
-	  t : Pointer to the thread executing the operation.
-	  p : Pointer to the semaphore object for the thread.
-	  */
+t : Pointer to the thread executing the operation.
+p : Pointer to the semaphore object for the thread.
+*/
 #define SEMAPHORE_WAIT(t, p)  \
   do { \
     THREAD_WAIT_UNTIL(t, (p)->counter > 0); \
     --(p)->counter; \
   } while(0) 
-	  /*
-	  Signal and increment the counter inside the semaphore
+/*
+Signal and increment the counter inside the semaphore
 
-	  t : Pointer to the thread executing the operation.
-	  p : Pointer to the semaphore object for the thread.
-	  */
+t : Pointer to the thread executing the operation.
+p : Pointer to the semaphore object for the thread.
+*/
 #define SEMAPHORE_SIGNAL(t, p) ++(p)->counter
 #endif 

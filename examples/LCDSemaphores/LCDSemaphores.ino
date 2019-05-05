@@ -25,6 +25,8 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 struct thread main_thread_object;
 
+Displayer MainDisplayer(0, 150);
+
 class Displayer{
 
 	long beginTime;
@@ -36,20 +38,18 @@ class Displayer{
 
   //Init
   public:
-    Displayer(long start, long end, long duration, char* Tmessage){
+    Displayer(long start, long duration){
 
 			beginTime = start;
-			endTime = end;
 			durationTime = duration;
 			previousMillis = 0;
       Serial.println("LCD is set up\n");
 			currState = 0;
-			message = Tmessage;
 
     }
 
   // Called during each thread to update the LED
-  void Update(){
+  void Update(char* message){
 		unsigned long currentMillis = millis();
 		if((currState == 1) && (currentMillis - previousMillis >= durationTime)){
 
@@ -90,11 +90,8 @@ static int consumer(struct thread* thread) {
     // Print the value.
     int value;
     value = (int) buffer[buffer_pointer];
-    Serial.print("Value ");
-    Serial.print(value);
-    Serial.print (" removed at ");
-    Serial.print(buffer_pointer);
-    Serial.print("\n");
+		char newM = "Value " + value + "removed at " + buffer_pointer + "\n";
+		MainDisplayer.update(newM)
     // Move buffer pointer, signal accordingly.
     buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
     SEMAPHORE_SIGNAL(thread, &empty);
@@ -116,11 +113,8 @@ static int producer(struct thread *thread) {
     // Wait until the buffer is empty.
     SEMAPHORE_WAIT(thread, &empty);
     int value = total_produced;
-    Serial.print("Value ");
-    Serial.print(value);
-    Serial.print (" added at ");
-    Serial.print(buffer_pointer);
-    Serial.print("\n");
+		char newM = "Value " + value + " added at " + buffer_pointer + "\n";
+		MainDisplayer.update(newM)
     buffer[buffer_pointer] = value;
     // Move buffer pointer, signal accordingly.
     buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
@@ -130,8 +124,6 @@ static int producer(struct thread *thread) {
 }
 
 
-
-Displayer LCDThreadA(50, 300, 500, MessageA);
 
 
 /*

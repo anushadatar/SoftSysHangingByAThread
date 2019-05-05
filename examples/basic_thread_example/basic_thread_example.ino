@@ -1,3 +1,10 @@
+/* 
+  Basic example of threading using the "thread.h" header file.
+  
+  Should create two threads that each run when the other is not 
+  running by switching the values of two flags. 
+*/
+
 #include "thread.h"
 #include <stdio.h> 
 
@@ -16,7 +23,7 @@ static int example1(struct thread *thread)
   THREAD_START(thread);
   while(1) {
     THREAD_WAIT_UNTIL(thread, flag2 != 0);
-    Serial.println("Protothread 1 running\n");
+    Serial.println("Thread 1 running\n");
     /* Flip the flags so the other thread can run. */
     flag2 = 0;
     flag1 = 1;
@@ -37,7 +44,7 @@ static int example2(struct thread *thread)
     /* Wait until triggered and then re-flip the flags. */
     flag2 = 1;
     THREAD_WAIT_UNTIL(thread, flag1 != 0);
-    Serial.println("Protothread 2 running\n");
+    Serial.println("Thread 2 running\n");
     flag1 = 0;
   }
   THREAD_CLEAR(thread);

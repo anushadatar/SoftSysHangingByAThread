@@ -121,7 +121,7 @@ static int example1(struct thread *thread)
 
 - [Blink_With_Threads](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/examples/blinkWithThreads/blinkWithThreads.ino): With an Object-Oriented implementation of an LED blinker, Blink_With_Threads creates two LED objects, two threads. Each thread wraps an LED object. By setting variable on and off times for the LED on each thread, the threads display their overlapping processes. The LED blinker object counts milliseconds to update its state. For simplicity, the blinker object can be abstracted to a simple on/off state class for an LED.
 
-// GIF of LEDs
+
 ![GIF of LEDs Screen](images/LEDGIF.gif)
 
 - [Basic_Semaphore](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/examples/basic_semaphore_example/basic_semaphore_example.ino): This example uses a basic semaphore implementation along with the thread library to simulate the Producer-Consumer problem. Basic_Semaphores exemplifies how to create a bounded buffer that handles tasks from a producer and consumer. A producer thread adds to the buffer until it reaches capacity and then a consumer thread removes from until it is empty.

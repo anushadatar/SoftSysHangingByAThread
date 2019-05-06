@@ -174,7 +174,7 @@ static int consumer(struct thread* thread) {
 
 - [LCD_With_Semaphores](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/examples/LCDSemaphores/LCDSemaphores.ino): Simular to Basic_Semaphore and Blink_With_Threads, LCD_With_Semaphores uses the thread and semaphore implementation to manage a producer/consumer system. The LCD screen displays the count and the semaphore value.
 
-![GIF of LCD Screen](https://github.com/anushadatar/SoftSysHangingByAThread/LCDGIF.gif)
+![GIF of LCD Screen](images/LCDGIF.gif)
 
 
 

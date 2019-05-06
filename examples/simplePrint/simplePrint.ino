@@ -51,12 +51,11 @@ void setup(void) {
 void loop(void)
 {  
   /* Initialize threads */
-  THREAD_INITALIZE(&thread1);
-  THREAD_INITALIZE(&thread2);
+  THREAD_INITIALIZE(&thread1);
+  THREAD_INITIALIZE(&thread2);
   /* Run the two threads forever. */
   while(1) {
     example1(&thread1);
     example2(&thread2);
   }
 }
-

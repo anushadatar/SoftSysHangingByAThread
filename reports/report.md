@@ -1,14 +1,14 @@
 
-# Hanging by a Thread: Concurrency on an Arduino 
+# Hanging by a Thread: Concurrency on an Arduino
 ## Allison Basore and Anusha Datar
 
 # Project Vision
 
-The goal of our project was to write the appropriate firmware to support threading on an Arduino Uno. In doing so, we hoped to implement several different methods of handling concurrent processes and create interesting examples that leverage this functionality. 
+The goal of our project was to write the appropriate firmware to support threading on an Arduino Uno. In doing so, we hoped to implement several different methods of handling concurrent processes and create interesting examples that leverage this functionality.
 
 
 Our MVP (minimum viable product) functionality included:
-- An functioning threading API for embedded targets implemented in C 
+- An functioning threading API for embedded targets implemented in C
 - Documentation of functionality for basic threading examples (blinking different LEDs without interruption) on an Arduino Uno
 
 Our stretch goals included:
@@ -17,7 +17,7 @@ Our stretch goals included:
 
 # Results
 ## Threading Framework
-Our target platform, the Arduino Uno, is a single core device which does not support truly parallel tasks. To implement a threading framework, we leveraged the \_\_LINE\_\_ macro to simulate the execution of multiple processes. 
+Our target platform, the Arduino Uno, is a single core device which does not support truly parallel tasks. To implement a threading framework, we leveraged the \_\_LINE\_\_ macro to simulate the execution of multiple processes.
 
 To do this, we first define a single struct made up of a short. Each thread uses one of these lightweight variables to coordinate execution.
 ~~~
@@ -39,10 +39,10 @@ Along with a single `pass` object, each thread also uses four status signals to 
 #define THREAD_YIELDED 1
 // If the thread has been exited.
 #define THREAD_CLOSED  2
-// If the thread has been removed. 
+// If the thread has been removed.
 #define THREAD_CLEARED 3
 ~~~
-Each state has a set of definitions associated with it to set the value of the `pass` struct to the necessary state to either start the new process, resume the original process, or close and clear the `thread` struct itself. 
+Each state has a set of definitions associated with it to set the value of the `pass` struct to the necessary state to either start the new process, resume the original process, or close and clear the `thread` struct itself.
 
 For example, the `THREAD_START` method produces a thread
 ~~~
@@ -54,7 +54,7 @@ A more complicated case is the `THREAD_WAIT_UNTIL` method, which waits until som
 #define THREAD_WAIT_UNTIL(thread, trigger) \
     do { \
         PASS_SET((thread)->pass); \
-        if(!(trigger)) \ 
+        if(!(trigger)) \
 	     { \
 	         return THREAD_WAITING; \
 	     } \
@@ -75,15 +75,15 @@ Each semaphore struct hold a thread until a the flag variable passed to it has b
   do { \
     THREAD_WAIT_UNTIL(t, (p)->counter > 0); \
     --(p)->counter; \
-  } while(0) 
+  } while(0)
 ~~~
 To signal, increment the counter.
 ~~~
 #define SEMAPHORE_SIGNAL(t, p) ++(p)->counter
 ~~~
-Multiple semaphores can signal to each other to coordinate processes. This is especially useful when working with shared data structures. 
+Multiple semaphores can signal to each other to coordinate processes. This is especially useful when working with shared data structures.
 
-Because the semaphore struct is a wrapper for a single integer, they can quickly be adapted for use cases that would otherwise involve synchronization structures such as condition variables or mutexes. 
+Because the semaphore struct is a wrapper for a single integer, they can quickly be adapted for use cases that would otherwise involve synchronization structures such as condition variables or mutexes.
 ## Examples
 
 Throughout the project we consistently developed various examples that would best display the threading functionality. We used basic Arduino functions and materials including printing to the Serial monitor, blinking LEDs, and printing to LCD displays. More information about how to use the examples can be found in the project [README](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/README.md). Below are highlights from a few of the examples:
@@ -116,12 +116,12 @@ static int example1(struct thread *thread)
 }
 ~~~
 
-//Screenshot of Print statements
+![Output of Print Example](images/PrintStatements.png)
 
 
 - [Blink_With_Threads](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/examples/blinkWithThreads/blinkWithThreads.ino): With an Object-Oriented implementation of an LED blinker, Blink_With_Threads creates two LED objects, two threads. Each thread wraps an LED object. By setting variable on and off times for the LED on each thread, the threads display their overlapping processes. The LED blinker object counts milliseconds to update its state. For simplicity, the blinker object can be abstracted to a simple on/off state class for an LED.
 
-// GIF of LEDs
+
 ![GIF of LEDs Screen](images/LEDGIF.gif)
 
 - [Basic_Semaphore](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/examples/basic_semaphore_example/basic_semaphore_example.ino): This example uses a basic semaphore implementation along with the thread library to simulate the Producer-Consumer problem. Basic_Semaphores exemplifies how to create a bounded buffer that handles tasks from a producer and consumer. A producer thread adds to the buffer until it reaches capacity and then a consumer thread removes from until it is empty.
@@ -202,4 +202,3 @@ We also referenced the following general material about concurrency, especially 
 - [Semaphores in Arduino](https://www.hackster.io/feilipu/using-freertos-semaphores-in-arduino-ide-b3cd6c)
 
 Overall we found Adam Dunkel's [library documentation](http://dunkels.com/adam/pt/expansion.html) for learning about how these threads work and how we can implement them highly valuable.
-

@@ -1,5 +1,5 @@
-## Hanging By a Thread
-#### Allison Basore and Anusha Datar
+# Hanging By a Thread
+## Allison Basore and Anusha Datar
 Software Systems SP19 Project 2 : Arduino threading library in C
 
 # Thread library

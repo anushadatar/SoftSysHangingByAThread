@@ -25,7 +25,59 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 struct thread main_thread_object;
 
-Displayer MainDisplayer(0, 150);
+
+
+class Blinkable{
+
+  //Set up Value
+  int ledPin;
+
+  // State Value
+  int currState;
+
+  //Time Values
+  long beginTime;
+  long endTime;
+  unsigned long previousMillis;
+
+  //Init
+  public:
+    Blinkable(int pinNum, long start, long end){
+      ledPin = pinNum;
+      pinMode(ledPin, OUTPUT);
+      currState = LOW;
+      beginTime = start;
+      endTime = end;
+      previousMillis = 0;
+    }
+
+  // Called during each thread to update the LED
+  void update(){
+    unsigned long currentMillis = millis();
+
+
+    if((currState == HIGH) && (currentMillis - previousMillis >= beginTime)){
+
+      // Going to turn off
+
+      currState = LOW;
+
+      previousMillis = currentMillis;
+
+
+      digitalWrite(ledPin, LOW);
+    }else if ((currState == LOW) && (currentMillis - previousMillis >= endTime)){
+
+      //Going to turn on
+
+      currState = HIGH;
+      previousMillis = currentMillis;
+      digitalWrite(ledPin, HIGH);
+    }
+  }
+};
+
+
 
 class Displayer{
 
@@ -49,7 +101,7 @@ class Displayer{
     }
 
   // Called during each thread to update the LED
-  void Update(char* message){
+  void update(int value){
 		unsigned long currentMillis = millis();
 		if((currState == 1) && (currentMillis - previousMillis >= durationTime)){
 
@@ -58,7 +110,7 @@ class Displayer{
     	currState = 0;
 
       previousMillis = currentMillis;
-
+//
 			lcd.clear();
       lcd.noDisplay();
     }else if ((currState == 0) && (currentMillis - previousMillis <= durationTime)){
@@ -67,12 +119,18 @@ class Displayer{
       currState = 1;
       previousMillis = currentMillis;
 			lcd.display();
-			lcd.print(message);
+			lcd.print(value);
+      Serial.println(value);
     }
 
 	}
 
 };
+
+Displayer MainDisplayer(0, 150);
+
+Blinkable ledThreadA(6, 150, 300);
+Blinkable ledThreadB(7, 0, 0);
 
 /*
 Consumer thread that removes from bounded buffer and then
@@ -89,9 +147,10 @@ static int consumer(struct thread* thread) {
     SEMAPHORE_WAIT(thread, &full);
     // Print the value.
     int value;
+    lcd.display();
+    ledThreadA.update();
     value = (int) buffer[buffer_pointer];
-		char newM = "Value " + value + "removed at " + buffer_pointer + "\n";
-		MainDisplayer.update(newM)
+		MainDisplayer.update(value);
     // Move buffer pointer, signal accordingly.
     buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
     SEMAPHORE_SIGNAL(thread, &empty);
@@ -113,8 +172,8 @@ static int producer(struct thread *thread) {
     // Wait until the buffer is empty.
     SEMAPHORE_WAIT(thread, &empty);
     int value = total_produced;
-		char newM = "Value " + value + " added at " + buffer_pointer + "\n";
-		MainDisplayer.update(newM)
+		MainDisplayer.update(value);
+    ledThreadB.update();
     buffer[buffer_pointer] = value;
     // Move buffer pointer, signal accordingly.
     buffer_pointer = (buffer_pointer + 1) % BUFFER_SIZE;
@@ -159,6 +218,6 @@ void setup(void) {
 void loop(void){
 	THREAD_INITIALIZE(&main_thread_object);
 	while(THREAD_SCHEDULE(main_thread(&main_thread_object))) {
-		delay(10);
+		delay(1000);
 	}
 }

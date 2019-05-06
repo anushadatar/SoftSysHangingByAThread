@@ -1,7 +1,25 @@
+/*
+  Threading using the "thread.h" header file and LED displys.
+
+  Creates two threads that each run. Their processes overlap and show the psudo
+	thread functionality. The LED bliker object counts milliseconds before updating.
+*/
+
+
 #include "thread.h"
 #include <stdio.h>
 
-// OO immplimention of blinking LED's using threads
+/*
+  Blinkable: OO immplimention of blinking LED's using threads
+	ledPin: Sets the output pin
+	currState: Used to know when to update the LED state
+	beginTime: set when initialized as the start time
+	endTime: set when initialized and used to singal the end of ON state
+	previousMillis: used to check if update to state is needed
+
+	Update:
+
+ */
 
 class Blinkable{
 
@@ -106,8 +124,8 @@ void setup(void) {
 void loop(void)
 {
   /* Initialize threads */
-  THREAD_INITALIZE(&thread1);
-  THREAD_INITALIZE(&thread2);
+  THREAD_INITIALIZE(&thread1);
+  THREAD_INITIALIZE(&thread2);
   /* Run the two threads forever. */
   while(1) {
     example1(&thread1);

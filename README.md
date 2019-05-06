@@ -27,3 +27,5 @@ All examples can be found in the examples folder in the main directory.
 
 # How to Use
 To use this threading framework in another arduino project, add the [thread.h](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/thread.h) header file to your arduino project folder and the include it in your source file.
+
+For more information, reference our [report](https://github.com/anushadatar/SoftSysHangingByAThread/blob/master/reports/report.md).

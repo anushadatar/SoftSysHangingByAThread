@@ -26,6 +26,18 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 struct thread main_thread_object;
 
 
+/*
+  Blinkable: OO immplimention of blinking LED's using threads
+	ledPin: Sets the output pin
+	currState: Used to know when to update the LED state
+	beginTime: set when initialized as the start time
+	endTime: set when initialized and used to singal the end of ON state
+	previousMillis: used to check if update to state is needed
+
+	Update: Checks milliseccnds since last one state and either turns on, off or
+	maintains state of LED.
+
+ */
 
 class Blinkable{
 
@@ -78,6 +90,17 @@ class Blinkable{
 };
 
 
+/*
+  Displayer: OO immplimention of displaying on LCD screen
+	currState: Used to know when if it is being used
+	beginTime: set when initialized as the start time
+	endTime: set when initialized and used to singal the end of ON state
+	previousMillis: used to check if update to state is needed
+	message: the message to be displayed with an ON state
+
+	Update: Checks if needed to be cleared and displayed the new message
+
+ */
 
 class Displayer{
 
@@ -127,8 +150,10 @@ class Displayer{
 
 };
 
+// Creating single display object for both threads
 Displayer MainDisplayer(0, 150);
 
+// Two instances of LEDs, one for each thread
 Blinkable ledThreadA(6, 150, 300);
 Blinkable ledThreadB(7, 0, 0);
 

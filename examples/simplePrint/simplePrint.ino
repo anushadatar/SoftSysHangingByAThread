@@ -1,11 +1,17 @@
+
+/*
+ *  Creates and runs two threads. A simple print statement is printed from each thread.
+ */
+
+
 #include "thread.h"
-#include <stdio.h> 
+#include <stdio.h>
 
 static int flag1, flag2;
 static struct thread thread1, thread2;
 
-/* 
- *  example1
+/*
+ *  Thread 1's code
  */
 static int example1(struct thread *thread)
 {
@@ -20,8 +26,8 @@ static int example1(struct thread *thread)
   THREAD_CLEAR(thread);
 }
 
-/* 
- *  example2
+/*
+ *  Thread 2's code
  */
 static int example2(struct thread *thread)
 {
@@ -49,7 +55,7 @@ void setup(void) {
  * Loop
  */
 void loop(void)
-{  
+{
   /* Initialize threads */
   THREAD_INITIALIZE(&thread1);
   THREAD_INITIALIZE(&thread2);

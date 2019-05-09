@@ -1,3 +1,10 @@
+/*
+  Threading using the "thread.h" header file and LCD Display.
+
+  Creates two threads that each run. Their processes overlap and show the psudo
+	thread functionality. A message from each thread is sent to the LCD screen.
+*/
+
 #include "thread.h"
 #include <stdio.h>
 #include <LiquidCrystal.h> // LCD Screen
@@ -10,6 +17,21 @@ char* ThreadBMessage;
 
 static int flag1, flag2;
 static struct thread thread1, thread2;
+
+
+/*
+  Displayer: OO immplimention of displaying on LCD screen
+	currState: Used to know when if it is being used
+	beginTime: set when initialized as the start time
+	endTime: set when initialized and used to singal the end of ON state
+	previousMillis: used to check if update to state is needed
+	message: the message to be displayed with an ON state
+
+	Update: Checks if needed to be cleared and displayed the new message
+
+ */
+
+
 
 class Displayer{
 
@@ -61,16 +83,18 @@ class Displayer{
 };
 
 
+// Messages for each thead
 char* MessageA = "This is Thread A";
 char* MessageB = "Hi from Thread B";
 
 
+// Declaring Seperate instance of each thread LCD display
 Displayer LCDThreadA(50, 300, 500, MessageA);
 Displayer LCDThreadB(250, 550, 500, MessageB);
 
 
 /*
- *  example1
+ *  Thread 1's Code
  */
 static int example1(struct thread *thread){
   THREAD_START(thread);
@@ -85,7 +109,7 @@ static int example1(struct thread *thread){
 }
 
 /*
- *  example2
+ *  Thread 2's Code
  */
 static int example2(struct thread *thread){
   THREAD_START(thread);

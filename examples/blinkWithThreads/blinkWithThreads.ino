@@ -17,7 +17,8 @@
 	endTime: set when initialized and used to singal the end of ON state
 	previousMillis: used to check if update to state is needed
 
-	Update:
+	Update: Checks milliseccnds since last one state and either turns on, off or
+	maintains state of LED.
 
  */
 
@@ -79,7 +80,7 @@ static int flag1, flag2;
 static struct thread thread1, thread2;
 
 /*
- *  example1
+ *  Thread 1's Code
  */
 static int example1(struct thread *thread)
 {
@@ -95,7 +96,7 @@ static int example1(struct thread *thread)
 }
 
 /*
- *  example2
+ *  Thread 2's Code
  */
 static int example2(struct thread *thread)
 {
